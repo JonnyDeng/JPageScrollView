@@ -65,25 +65,29 @@
         switch (_viewType) {
             case SubViewTypeTableView:
             {
-                for (NSInteger page = 0; page<self.page; page++) {
-                    UITableView *tableView = [self.jDataSource loadTableViewAtPage:page];
-                    tableView.frame = CGRectMake(self.width*page, 0, self.bounds.size.width, self.bounds.size.height);
-                    tableView.tag = page+kDefaultTag;
-                    tableView.delegate = self;
-                    tableView.dataSource = self;
-                    [self addSubview:tableView];
+                if ([_jDataSource respondsToSelector:@selector(loadTableViewAtPage:)]) {
+                    for (NSInteger page = 0; page<self.page; page++) {
+                        UITableView *tableView = [_jDataSource loadTableViewAtPage:page];
+                        tableView.frame = CGRectMake(self.width*page, 0, self.bounds.size.width, self.bounds.size.height);
+                        tableView.tag = page+kDefaultTag;
+                        tableView.delegate = self;
+                        tableView.dataSource = self;
+                        [self addSubview:tableView];
+                    }
                 }
             }
                 break;
             case SubViewTypeCollectionView:
             {
-                for (NSInteger page = 0; page<self.page; page++) {
-                    UICollectionView *collectionView = [self.jDataSource loadCollectionViewAtPage:page];
-                    collectionView.frame = CGRectMake(self.bounds.size.width*page, 0, self.bounds.size.width, self.bounds.size.height);
-                    collectionView.tag = page+kDefaultTag;
-                    collectionView.delegate = self;
-                    collectionView.dataSource = self;
-                    [self addSubview:collectionView];
+                if ([_jDataSource respondsToSelector:@selector(loadCollectionViewAtPage:)]) {
+                    for (NSInteger page = 0; page<self.page; page++) {
+                        UICollectionView *collectionView = [_jDataSource loadCollectionViewAtPage:page];
+                        collectionView.frame = CGRectMake(self.bounds.size.width*page, 0, self.bounds.size.width, self.bounds.size.height);
+                        collectionView.tag = page+kDefaultTag;
+                        collectionView.delegate = self;
+                        collectionView.dataSource = self;
+                        [self addSubview:collectionView];
+                    }
                 }
             }
                 break;
