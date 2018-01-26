@@ -41,7 +41,6 @@
 {
     self.pagingEnabled = YES;
     self.delegate = self;
-    _viewType = SubViewTypeTableView;
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     [self loadView];
@@ -50,49 +49,32 @@
 {
     return [_jDataSource numberOfPages];
 }
--(void)setViewType:(SubViewType)viewType
+-(void)reloadView
 {
-    if (_viewType != viewType) {
-        _viewType = viewType;
-        [self removeAllSubviews];
-        [self loadView];
-    }
+    [self removeAllSubviews];
+    [self loadView];
 }
 -(void)loadView
 {
     if (_jDelegate&&_jDataSource) {
         self.contentSize = CGSizeMake(self.bounds.size.width*self.page, self.bounds.size.height);
-        switch (_viewType) {
-            case SubViewTypeTableView:
-            {
-                if ([_jDataSource respondsToSelector:@selector(loadTableViewAtPage:)]) {
-                    for (NSInteger page = 0; page<self.page; page++) {
-                        UITableView *tableView = [_jDataSource loadTableViewAtPage:page];
-                        tableView.frame = CGRectMake(self.width*page, 0, self.bounds.size.width, self.bounds.size.height);
-                        tableView.tag = page+kDefaultTag;
-                        tableView.delegate = self;
-                        tableView.dataSource = self;
-                        [self addSubview:tableView];
-                    }
+        if ([_jDataSource respondsToSelector:@selector(loadSubViewAtPage:)]) {
+            for (NSInteger page = 0; page<self.page; page++) {
+                UIView *subView = [_jDataSource loadSubViewAtPage:page];
+                subView.frame = CGRectMake(self.bounds.size.width*page, 0, self.bounds.size.width, self.bounds.size.height);
+                subView.backgroundColor = ClearColor;
+                subView.tag = page+kDefaultTag;
+                [self addSubview:subView];
+                if ([subView isKindOfClass:[UITableView class]]) {
+                    UITableView *tableView = (UITableView *)subView;
+                    tableView.delegate = self;
+                    tableView.dataSource = self;
+                }else if ([subView isKindOfClass:[UICollectionView class]]){
+                    UICollectionView *collectionView = (UICollectionView *)subView;
+                    collectionView.delegate = self;
+                    collectionView.dataSource = self;
                 }
             }
-                break;
-            case SubViewTypeCollectionView:
-            {
-                if ([_jDataSource respondsToSelector:@selector(loadCollectionViewAtPage:)]) {
-                    for (NSInteger page = 0; page<self.page; page++) {
-                        UICollectionView *collectionView = [_jDataSource loadCollectionViewAtPage:page];
-                        collectionView.frame = CGRectMake(self.bounds.size.width*page, 0, self.bounds.size.width, self.bounds.size.height);
-                        collectionView.tag = page+kDefaultTag;
-                        collectionView.delegate = self;
-                        collectionView.dataSource = self;
-                        [self addSubview:collectionView];
-                    }
-                }
-            }
-                break;
-            default:
-                break;
         }
     }
 }

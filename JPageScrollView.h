@@ -8,11 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger){
-    SubViewTypeTableView,
-    SubViewTypeCollectionView,
-} SubViewType;
-
 @protocol JPageScrollViewDelegate,JPageScrollViewDataSource;
 
 @interface JPageScrollView : UIScrollView
@@ -21,11 +16,11 @@ typedef NS_ENUM(NSInteger){
 
 @property (nonatomic, weak) id <JPageScrollViewDataSource> jDataSource;
 
-@property (nonatomic, assign) SubViewType viewType;
-
 @property (nonatomic, readonly) NSInteger page;
 
 -(void)scrollToPage:(NSInteger)page;
+
+-(void)reloadView;
 
 @end
 
@@ -51,11 +46,11 @@ typedef NS_ENUM(NSInteger){
 -(NSInteger)numberOfPages;
 
 @optional
--(UITableView *)loadTableViewAtPage:(NSInteger)page;
+-(UIView *)loadSubViewAtPage:(NSInteger)page;
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section atPage:(NSInteger)page;
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath atPage:(NSInteger)page;
 
--(UICollectionView *)loadCollectionViewAtPage:(NSInteger)page;
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section atPage:(NSInteger)page;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath atPage:(NSInteger)page;
 
